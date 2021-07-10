@@ -26,7 +26,7 @@ roomidList = [];
 //     //  res.render('index');
 // });
 
-app.get('/chat', (req, res) => {
+app.get('', (req, res) => {
     res.render('chat');
 });
 
@@ -111,4 +111,4 @@ io2.on('connection', socket2 => {
 });
 
 
-server.listen( 3030);
+server.listen(process.env.PORT || 3030);
