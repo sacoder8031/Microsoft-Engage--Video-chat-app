@@ -94,7 +94,7 @@ io2.on('connection', socket2 => {
     // #############
     socket2.on('new-user-joined', (roomId, name) => {
         socket2.join(roomId);
-        console.log("new user", name);
+        // console.log("new user", name);
         users[socket2.id] = name;
         socket2.broadcast.to(roomId).emit('user-joined', name);
 
@@ -105,7 +105,7 @@ io2.on('connection', socket2 => {
         })
 
         socket2.on('disconnect', message => {
-            socket2.to(roomId).emit('left', users[socket2.id]);
+            socket2.broadcast.to(roomId).emit('left', users[socket2.id]);
             delete users[socket2.id];
         })
     })
