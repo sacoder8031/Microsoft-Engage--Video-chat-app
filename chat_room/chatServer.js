@@ -113,5 +113,5 @@ io2.on('connection', socket2 => {
 });
 
 
-// server.listen(process.env.PORT || 3030);
-server.listen( 3030);
+server.listen(process.env.PORT || 3030);
+// server.listen( 3030);
