@@ -7,7 +7,7 @@ const io2 = require('socket.io')(server);
 
 
 // importing library uuid for generating random room id
-// const {v4 : uuidv4} = require('uuid');
+const {v4 : uuidv4} = require('uuid');
 
 const { ExpressPeerServer } = require('peer');
 const peerServer = ExpressPeerServer(server, {
@@ -21,18 +21,18 @@ app.use('/peerjs', peerServer);
 
 roomidList = [];
 
-// app.get('/', (req, res) => {
-//     res.redirect(`/${uuidv4()}`);
-//     //  res.render('index');
-// });
-
-app.get('', (req, res) => {
-    res.render('chat');
+app.get('/', (req, res) => {
+    res.redirect(`/${uuidv4()}`);
+    //  res.render('index');
 });
 
-// app.get('/:room' , (req, res) => {
-//     res.render('room', { roomId: req.params.room})
+// app.get('/', (req, res) => {
+//     res.render('chat');
 // });
+
+app.get('/:room' , (req, res) => {
+    res.render('chat', { roomId: req.params.room})
+});
 
 
 const users = {};
@@ -92,23 +92,26 @@ const users = {};
 
 io2.on('connection', socket2 => {
     // #############
-    socket2.on('new-user-joined', name => {
+    socket2.on('new-user-joined', (roomId, name) => {
+        socket2.join(roomId);
         console.log("new user", name);
         users[socket2.id] = name;
-        socket2.broadcast.emit('user-joined', name);
-    })
+        socket2.broadcast.to(roomId).emit('user-joined', name);
 
-    socket2.on('send', message => {
-        socket2.broadcast.emit('receive', {
-            message: message, name: users[socket2.id]
+        socket2.on('send', message => {
+            socket2.broadcast.to(roomId).emit('receive', {
+                message: message, name: users[socket2.id]
+            })
+        })
+
+        socket2.on('disconnect', message => {
+            socket2.to(roomId).emit('left', users[socket2.id]);
+            delete users[socket2.id];
         })
     })
-
-    socket2.on('disconnect', message => {
-        socket2.broadcast.emit('left', users[socket2.id]);
-        delete users[socket2.id];
-    })
+    
 });
 
 
-server.listen(process.env.PORT || 3030);
+// server.listen(process.env.PORT || 3030);
+server.listen( 3030);
