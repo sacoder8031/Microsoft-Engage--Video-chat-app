@@ -22,13 +22,32 @@ app.use('/peerjs', peerServer);
 roomidList = [];
 
 app.get('/', (req, res) => {
-    res.redirect(`/${uuidv4()}`);
-    //  res.render('index');
+    // res.redirect(`/${uuidv4()}`);
+    res.render('index', {newRoom: `${uuidv4()}`});
 });
 
 // app.get('/', (req, res) => {
 //     res.render('chat');
 // });
+
+Room_list = [];
+
+app.get('/:room/:check' , (req, res) => {
+    const check_route = req.params.check;
+    const room_id = req.params.room;
+    // console.log(check_route);
+
+    if (check_route == "2") {
+        if (!Room_list.includes(room_id)) {
+            res.redirect('/');
+        }
+    }
+    else {
+        // console.log(room_id);
+         Room_list.push(room_id);
+    }
+    res.redirect(`/${room_id}`);
+});
 
 app.get('/:room' , (req, res) => {
     res.render('chat', { roomId: req.params.room})
@@ -105,7 +124,7 @@ io2.on('connection', socket2 => {
         })
 
         socket2.on('disconnect', message => {
-            socket2.broadcast.to(roomId).emit('left', users[socket2.id]);
+            socket2.to(roomId).emit('left', users[socket2.id]);
             delete users[socket2.id];
         })
     })

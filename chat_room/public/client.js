@@ -39,3 +39,11 @@ socket2.on('receive', data => {
 socket2.on('left', name => {
     append(`${name} left the chat`, 'right');
 });
+
+function joinVideo() {
+    window.location.href = `https://videocallsharabh.herokuapp.com/${ROOM_ID}`;
+}
+
+function leaveRoom() {
+    window.location.href = "/";
+}
